@@ -1,72 +1,46 @@
-const CACHE_NAME = 'escola-biblica-v1.0';
-const urlsToCache = [
+const CACHE_NAME = 'escola-biblica-v1';
+const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './styles.css',
   './app.js',
-  './manifest.json',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600&display=swap',
-  'https://fonts.googleapis.com/icon?family=Material+Icons'
+  './manifest.json'
 ];
 
 // Instalação do Service Worker
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('Arquivos em cache');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
 });
 
-// Ativação e limpeza de caches antigos
-self.addEventListener('activate', event => {
+// Ativação e limpeza de cache antigo
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys().then((keyList) => {
+      return Promise.all(keyList.map((key) => {
+        if (key !== CACHE_NAME) {
+          console.log('Removendo cache antigo', key);
+          return caches.delete(key);
+        }
+      }));
+    })
   );
 });
 
-// Estratégia: Cache First, fallback para rede
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        
-        return fetch(event.request).then(response => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
-            
-          return response;
-        });
-      }).catch(() => {
-        // Fallback para página offline
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      })
-  );
-});
-
-// Atualização em segundo plano
-self.addEventListener('message', event => {
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
+// Interceptação de requisições (Cache First Strategy)
+self.addEventListener('fetch', (event) => {
+  // Não cacheia chamadas para o script do Google Apps Script
+  if (event.request.url.includes('script.google.com')) {
+    return;
   }
+
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
 });

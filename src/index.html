@@ -1,1 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  
+  <meta name="theme-color" content="#1A237E">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Escola Bíblica">
 
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <title>Escola Bíblica IEQ Sede Região 1065</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="login-screen">
+    <div class="login-container">
+      <div class="login-logo">
+        <div id="logo-img" class="logo-img" style="background: #1A237E; display: flex; align-items: center; justify-content: center;">
+          <span style="color: white; font-weight: bold; font-size: 20px;">EB</span>
+        </div>
+        <div class="logo-subtitle">IEQ Sede Região 1065</div>
+      </div>
+      
+      <div class="login-tabs">
+        <div class="login-tab active" onclick="showLoginTab('login')">Entrar</div>
+        <div class="login-tab" onclick="showLoginTab('register')">Cadastrar</div>
+      </div>
+      
+      <div id="login-form" class="login-form">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="login-email" class="form-input" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <input type="password" id="login-password" class="form-input" placeholder="Sua senha">
+        </div>
+        <button class="btn-primary" onclick="login()">Entrar no Sistema</button>
+      </div>
+      
+      <div id="register-form" class="login-form" style="display: none;">
+        <div class="alert info">
+          <span class="material-icons">info</span>
+          <span>Cadastre-se como aluno ou professor</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de Usuário *</label>
+          <select id="reg-tipo" class="form-input" onchange="toggleCamposRegistro()">
+            <option value="">Selecione</option>
+            <option value="aluno">Aluno</option>
+            <option value="professor">Professor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nome Completo *</label>
+          <input type="text" id="reg-nome" class="form-input" placeholder="Seu nome completo">
+        </div>
+        <div class="form-group" id="campo-nascimento">
+          <label class="form-label">Data de Nascimento</label>
+          <input type="date" id="reg-nascimento" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="seu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Senha *</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="Crie uma senha (mínimo 6 caracteres)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar Senha *</label>
+          <input type="password" id="reg-confirmar-password" class="form-input" placeholder="Confirme sua senha">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Telefone *</label>
+          <input type="tel" id="reg-telefone" class="form-input" placeholder="(11) 99999-9999">
+        </div>
+        <div class="form-group" id="campo-foto">
+          <label class="form-label">Foto de Perfil</label>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="user-avatar" id="reg-foto-preview" style="width: 60px; height: 60px; font-size: 16px;" onclick="abrirModalFoto()">
+              <span class="material-icons">add_a_photo</span>
+            </div>
+            <button type="button" class="btn-secondary" onclick="abrirModalFoto()" style="flex: 1; padding: 10px;">
+              <span class="material-icons">photo_camera</span>
+              Escolher Foto
+            </button>
+          </div>
+          <input type="hidden" id="reg-foto-base64">
+        </div>
+        <div class="form-group" id="campo-escola">
+          <label class="form-label">Escola *</label>
+          <select id="reg-escola" class="form-input">
+            <option value="">Selecione uma escola</option>
+            <option value="Escola de Discípulos">Escola de Discípulos</option>
+            <option value="Escola de Líderes">Escola de Líderes</option>
+            <option value="Escola Bíblica Continuada">Escola Bíblica Continuada</option>
+          </select>
+        </div>
+        <div class="form-group" id="campo-celula">
+          <label class="form-label">Célula (se participante)</label>
+          <select id="reg-celula" class="form-input">
+            <option value="">Não participo de célula</option>
+          </select>
+        </div>
+        <div class="form-group" id="campo-ministerio">
+          <label class="form-label">Ministério de interesse</label>
+          <select id="reg-ministerio" class="form-input">
+            <option value="">Nenhum no momento</option>
+          </select>
+        </div>
+        <div class="form-group" id="campo-batizado">
+          <label class="form-label">Já é batizado?</label>
+          <select id="reg-batizado" class="form-input">
+            <option value="Não">Não</option>
+            <option value="Sim">Sim</option>
+          </select>
+        </div>
+        <div class="form-group" id="campo-professor-escola" style="display: none;">
+          <label class="form-label">Escola que irá ensinar *</label>
+          <select id="reg-professor-escola" class="form-input">
+            <option value="">Selecione uma escola</option>
+            <option value="Escola de Discípulos">Escola de Discípulos</option>
+            <option value="Escola de Líderes">Escola de Líderes</option>
+            <option value="Escola Bíblica Continuada">Escola Bíblica Continuada</option>
+          </select>
+        </div>
+        <div class="form-group" id="campo-biografia" style="display: none;">
+          <label class="form-label">Biografia</label>
+          <textarea id="reg-biografia" class="form-input" rows="3" placeholder="Sua biografia..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="registrar()">
+          <span class="material-icons">send</span>
+          Finalizar Cadastro
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-bar" id="app-bar">
+    <button class="menu-toggle" onclick="toggleSidebar()" style="background: none; border: none; font-size: 24px; cursor: pointer;">
+      <span class="material-icons">menu</span>
+    </button>
+    <div class="app-title">
+      <span class="material-icons">school</span>
+      <span id="app-title-text">Escola Bíblica</span>
+    </div>
+    <div class="app-actions">
+      <div style="position: relative; cursor: pointer;" onclick="toggleNotifications()">
+        <span class="material-icons">notifications</span>
+        <span class="badge-notification" id="notification-badge">0</span>
+      </div>
+      <button onclick="abrirTela('perfil')" style="background: none; border: none; font-size: 24px; cursor: pointer;">
+        <span class="material-icons">account_circle</span>
+      </button>
+      <button onclick="abrirTela('admin-config')" style="background: none; border: none; font-size: 24px; cursor: pointer;">
+        <span class="material-icons">settings</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="user-avatar" id="user-avatar" onclick="abrirTela('perfil')">JD</div>
+      <div class="user-info">
+        <h3 id="user-name">Carregando...</h3>
+        <p id="user-role">Aluno</p>
+      </div>
+    </div>
+    <div class="sidebar-menu" id="sidebar-menu"></div>
+  </div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="notifications-panel" id="notifications-panel">
+    <div style="padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0;">Notificações</h3>
+      <button onclick="toggleNotifications()" style="background: none; border: none; cursor: pointer;">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div id="notifications-list"></div>
+  </div>
+
+  <div id="app-content" style="display: none;">
+    
+    <div id="dashboard-screen" class="dashboard">
+      <div class="welcome-banner">
+        <h1 id="welcome-message">Bem-vindo!</h1>
+        <p id="welcome-subtitle">"Apegue-se à instrução, não a abandone; guarde-a, pois ela é a sua vida." - Provérbios 4:13</p>
+      </div>
+      <div class="stats-grid" id="stats-grid"></div>
+      
+      <div class="bible-section">
+        <div class="bible-header">
+          <h2>📖 Versículo do Dia</h2>
+          <button onclick="carregarVersiculoDia()" style="background: none; border: none; cursor: pointer;">
+            <span class="material-icons">refresh</span>
+          </button>
+        </div>
+        <div class="bible-verse" id="bible-verse">Carregando versículo...</div>
+        <div class="bible-reference" id="bible-reference"></div>
+      </div>
+
+      <div id="frequencia-section" class="frequencia-section" style="display: none;">
+        <h2 style="margin-bottom: 20px;">✅ Registrar Frequência</h2>
+        <div id="frequencia-camera" style="margin-bottom: 20px; display: none;">
+          <video id="camera-preview" width="100%" autoplay playsinline style="border-radius: 10px;"></video>
+          <canvas id="photo-canvas" style="display: none;"></canvas>
+        </div>
+        <button class="frequencia-btn" onclick="iniciarRegistroFrequencia()" id="frequencia-btn">
+          <span class="material-icons">camera_alt</span>
+          Registrar Frequência com Foto
+        </button>
+        <p style="margin-top: 15px; color: #666; font-size: 14px; text-align: center;" id="frequencia-status">
+          Clique no botão para registrar frequência com foto e localização
+        </p>
+      </div>
+
+      <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 30px;" id="proximas-aulas-container">
+        <h2 style="margin-bottom: 20px;">📅 Próximas Aulas</h2>
+        <div id="proximas-aulas-list"></div>
+      </div>
+
+      <div id="admin-panel" style="display: none;">
+        <h2 style="margin-bottom: 20px;">⚙️ Painel Administrativo</h2>
+        <div id="admin-content"></div>
+      </div>
+
+      <div id="professor-panel" style="display: none;">
+        <h2 style="margin-bottom: 20px;">👨‍🏫 Painel do Professor</h2>
+        <div id="professor-content"></div>
+      </div>
+    </div>
+
+    <div id="aulas-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">🎓 Minhas Aulas</h1>
+      <button class="btn-primary" onclick="abrirModalNovaAula()" style="margin-bottom: 20px; width: auto; display: none;" id="btn-nova-aula">
+        <span class="material-icons">add</span> Nova Aula
+      </button>
+      <div id="lista-aulas" class="aulas-list"></div>
+    </div>
+
+    <div id="materiais-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">📚 Materiais de Estudo</h1>
+      <div id="materiais-content">
+        <div class="materials-grid" id="materials-grid"></div>
+        <div id="adicionar-material-section" style="display: none; margin-top: 30px;">
+          <h3 style="margin-bottom: 20px;">➕ Adicionar Novo Material</h3>
+          <div style="background: white; border-radius: 15px; padding: 25px;">
+            <div class="form-group">
+              <label class="form-label">Título do Material *</label>
+              <input type="text" id="material-titulo" class="form-input" placeholder="Ex: Guia de Estudo Bíblico">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Descrição</label>
+              <textarea id="material-descricao" class="form-input" rows="3" placeholder="Descrição do material..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Disciplina/Escola *</label>
+              <select id="material-disciplina" class="form-input">
+                <option value="">Selecione</option>
+                <option value="Escola de Discípulos">Escola de Discípulos</option>
+                <option value="Escola de Líderes">Escola de Líderes</option>
+                <option value="Escola Bíblica Continuada">Escola Bíblica Continuada</option>
+                <option value="Geral">Geral</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Arquivo *</label>
+              <input type="file" id="material-arquivo" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png">
+              <div id="material-arquivo-info" style="font-size: 12px; color: #666; margin-top: 5px;"></div>
+            </div>
+            <button class="btn-primary" onclick="adicionarMaterial()">
+              <span class="material-icons">upload</span> Enviar Material
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="biblia-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">📖 Bíblia Online</h1>
+      <div style="background: white; border-radius: 15px; padding: 25px; margin-bottom: 30px;">
+        <div class="form-group">
+          <label class="form-label">Buscar Versículos</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="bible-search" class="form-input" placeholder="Ex: João 3:16 ou amor">
+            <button class="btn-primary" onclick="buscarVersiculos()" style="width: auto;">
+              <span class="material-icons">search</span>
+            </button>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <div style="flex: 1;">
+            <label class="form-label">Livro</label>
+            <select id="bible-book" class="form-input" onchange="carregarCapitulos()">
+              <option value="">Selecione um livro</option>
+            </select>
+          </div>
+          <div style="flex: 1;">
+            <label class="form-label">Capítulo</label>
+            <select id="bible-chapter" class="form-input" onchange="carregarVersiculosBiblia()" disabled>
+              <option value="">Selecione um capítulo</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="bible-results"></div>
+    </div>
+
+    <div id="perfil-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">👤 Meu Perfil</h1>
+      <div id="perfil-content"></div>
+    </div>
+
+    <div id="admin-alunos-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">👥 Gestão de Alunos</h1>
+      <button class="btn-primary" onclick="abrirModalCadastroAluno()" style="margin-bottom: 20px; width: auto; display: none;" id="btn-cadastrar-aluno">
+        <span class="material-icons">person_add</span> Cadastrar Novo Aluno
+      </button>
+      <div id="admin-alunos-content"></div>
+    </div>
+
+    <div id="admin-professores-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">👨‍🏫 Gestão de Professores</h1>
+      <div id="admin-professores-content"></div>
+    </div>
+
+    <div id="admin-aulas-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">📅 Gestão de Aulas</h1>
+      <div id="admin-aulas-content"></div>
+    </div>
+
+    <div id="admin-relatorios-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">📊 Relatórios</h1>
+      <div id="admin-relatorios-content"></div>
+    </div>
+
+    <div id="admin-config-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">⚙️ Configurações</h1>
+      <div id="admin-config-content"></div>
+    </div>
+
+    <div id="professor-frequencia-screen" class="dashboard" style="display: none;">
+      <h1 style="margin-bottom: 20px;">📋 Frequência dos Alunos</h1>
+      <div id="professor-frequencia-content"></div>
+    </div>
+  </div>
+
+  <div class="foto-modal" id="foto-modal">
+    <div class="foto-modal-content">
+      <h3 style="margin-bottom: 20px; color: var(--azul-escuro);">Escolher Foto</h3>
+      <div class="foto-options">
+        <div class="foto-option" onclick="escolherFotoCamera()">
+          <span class="material-icons" style="font-size: 48px; color: var(--azul-escuro);">photo_camera</span>
+          <span style="font-weight: 600;">Tirar Foto</span>
+          <span style="font-size: 12px; color: #666;">Usar câmera do dispositivo</span>
+        </div>
+        <div class="foto-option" onclick="escolherFotoGaleria()">
+          <span class="material-icons" style="font-size: 48px; color: var(--azul-escuro);">photo_library</span>
+          <span style="font-weight: 600;">Galeria</span>
+          <span style="font-size: 12px; color: #666;">Escolher da galeria</span>
+        </div>
+      </div>
+      <div style="margin-top: 20px;">
+        <button class="btn-secondary" onclick="fecharModalFoto()" style="width: 100%;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirmation-modal" id="confirmation-modal">
+    <div class="confirmation-content">
+      <span class="material-icons" style="font-size: 60px; color: var(--azul-escuro); margin-bottom: 20px;">help</span>
+      <h3 id="confirmation-title" style="margin-bottom: 15px; color: var(--cinza-escuro);">Confirmação</h3>
+      <p id="confirmation-message" style="margin-bottom: 25px; color: #666;"></p>
+      <div style="display: flex; gap: 15px;">
+        <button class="btn-secondary" onclick="fecharModalConfirmacao()" id="confirmation-cancel" style="flex: 1;">Cancelar</button>
+        <button class="btn-primary" onclick="confirmarAcao()" id="confirmation-confirm" style="flex: 1;">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-cadastro-aluno" class="modal-custom">
+    <div class="modal-content-custom">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: var(--azul-escuro);">Cadastrar Novo Aluno</h3>
+        <button onclick="fecharModalCadastroAluno()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--cinza);">×</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nome Completo *</label>
+        <input type="text" id="modal-aluno-nome" class="form-input" placeholder="Nome completo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data de Nascimento</label>
+        <input type="date" id="modal-aluno-nascimento" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" id="modal-aluno-email" class="form-input" placeholder="email@exemplo.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone *</label>
+        <input type="tel" id="modal-aluno-telefone" class="form-input" placeholder="(11) 99999-9999">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Escola *</label>
+        <select id="modal-aluno-escola" class="form-input">
+          <option value="">Selecione uma escola</option>
+          <option value="Escola de Discípulos">Escola de Discípulos</option>
+          <option value="Escola de Líderes">Escola de Líderes</option>
+          <option value="Escola Bíblica Continuada">Escola Bíblica Continuada</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Célula</label>
+        <select id="modal-aluno-celula" class="form-input">
+          <option value="">Não participa de célula</option>
+          <option value="CEL001">Célula Centro</option>
+          <option value="CEL002">Célula Norte</option>
+          <option value="CEL003">Célula Sul</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ministério</label>
+        <select id="modal-aluno-ministerio" class="form-input">
+          <option value="">Nenhum</option>
+          <option value="MIN001">Louvor</option>
+          <option value="MIN002">Infantil</option>
+          <option value="MIN003">Jovens</option>
+          <option value="MIN004">Intercessão</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Já é batizado?</label>
+        <select id="modal-aluno-batizado" class="form-input">
+          <option value="Não">Não</option>
+          <option value="Sim">Sim</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observações</label>
+        <textarea id="modal-aluno-observacoes" class="form-input" rows="3" placeholder="Observações adicionais..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="cadastrarAlunoViaModal()">
+        <span class="material-icons">save</span> Salvar Aluno
+      </button>
+    </div>
+  </div>
+
+  <div id="modal-nova-aula" class="modal-custom">
+    <div class="modal-content-custom">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: var(--azul-escuro);">Nova Aula</h3>
+        <button onclick="fecharModalNovaAula()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--cinza);">×</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Disciplina *</label>
+        <input type="text" id="modal-aula-disciplina" class="form-input" placeholder="Ex: Teologia Básica">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tema *</label>
+        <input type="text" id="modal-aula-tema" class="form-input" placeholder="Ex: A natureza de Deus">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição</label>
+        <textarea id="modal-aula-descricao" class="form-input" rows="3" placeholder="Descrição da aula..."></textarea>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Data *</label>
+          <input type="date" id="modal-aula-data" class="form-input">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Horário *</label>
+          <input type="time" id="modal-aula-horario" class="form-input">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Escola *</label>
+        <select id="modal-aula-escola" class="form-input">
+          <option value="">Selecione uma escola</option>
+          <option value="Escola de Discípulos">Escola de Discípulos</option>
+          <option value="Escola de Líderes">Escola de Líderes</option>
+          <option value="Escola Bíblica Continuada">Escola Bíblica Continuada</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="criarNovaAulaViaModal()">
+        <span class="material-icons">save</span> Criar Aula
+      </button>
+    </div>
+  </div>
+
+  <div id="modal-visualizar-aluno" class="modal-custom">
+    <div class="modal-content-custom" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: var(--azul-escuro);">Detalhes do Aluno</h3>
+        <button onclick="fecharModalVisualizarAluno()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--cinza);">×</button>
+      </div>
+      <div id="modal-aluno-detalhes"></div>
+    </div>
+  </div>
+
+  <div id="modal-visualizar-professor" class="modal-custom">
+    <div class="modal-content-custom" style="max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: var(--azul-escuro);">Detalhes do Professor</h3>
+        <button onclick="fecharModalVisualizarProfessor()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--cinza);">×</button>
+      </div>
+      <div id="modal-professor-detalhes"></div>
+    </div>
+  </div>
+
+  <div id="modal-sair" class="modal-custom">
+    <div style="background: white; border-radius: 15px; padding: 30px; width: 90%; max-width: 400px; text-align: center;">
+      <span class="material-icons" style="font-size: 60px; color: var(--vermelho); margin-bottom: 20px;">logout</span>
+      <h3 style="margin-bottom: 15px; color: var(--cinza-escuro);">Sair do Sistema</h3>
+      <p style="margin-bottom: 25px; color: #666;">Tem certeza que deseja sair?</p>
+      <div style="display: flex; gap: 15px;">
+        <button class="btn-secondary" onclick="fecharModalSair()" style="flex: 1;">Cancelar</button>
+        <button class="btn-primary" onclick="confirmarLogout()" style="flex: 1; background: var(--vermelho);">Sair</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loader" id="loader">
+    <div class="spinner"></div>
+    <div id="loader-text">Carregando...</div>
+  </div>
+  
+  <div id="alert-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;"></div>
+
+  <script>
+    // Registro do Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration.scope);
+          }, err => {
+            console.log('Falha ao registrar Service Worker:', err);
+          });
+      });
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
